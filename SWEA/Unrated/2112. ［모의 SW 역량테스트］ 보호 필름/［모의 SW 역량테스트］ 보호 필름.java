@@ -1,130 +1,101 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.StringTokenizer;
+ 
 public class Solution {
-
-	private static final int NO = -1;  // 약품 X
-	private static final int A = 0;  // 약품 A
-	private static final int B = 1;  // 약품 B
-
-	private static int D;  // 두께
-	private static int W;  // 가로 크기
-	private static int K;  // 합격기준
-	private static int[][] cells;  // 보호필름
-	private static int min;  // 각 테스트 케이스마다의 정답 중 최소값
-
-	private static StringBuilder sb = new StringBuilder();
-
-	public static void main(String[] args) throws Exception {
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-		int T;
-		T = Integer.parseInt(in.readLine());
-		for (int test_case = 1; test_case <= T; test_case++) {
-			sb.append("#" + test_case + " ");
-
-			String[] split = in.readLine().split(" ");
-			D = Integer.parseInt(split[0]);
-			W = Integer.parseInt(split[1]);
-			K = Integer.parseInt(split[2]);
-
-			cells = new int[D][W];
-			for (int d = 0; d < D; d++) {
-				split = in.readLine().split(" ");
-				for (int w = 0; w < W; w++) {
-					cells[d][w] = Integer.parseInt(split[w]);
-				}
-			}
-
-			// 초기화
-			min = Integer.MAX_VALUE;
-
-			subset(0, 0);
-			
-			sb.append(min).append("\n");
-		}
-		
-		System.out.println(sb);
-	}
-
-	// cnt: 선택 횟수
-	// usedCnt: 약품 선택 횟수
-	private static void subset(int cnt, int usedCnt) {
-
-		// 기저부분
-		if (cnt == D) {
-			// 합격기준 검사
-			int passCnt = 0;  // 통과된 열 개수
-			
-			for (int w = 0; w < W; w++) {
-				int k = 0;  // 연속된 개수
-				int prev = NO;
-				boolean isPass = false;
-				
-				for (int d = 0; d < D; d++) {
-					int current = cells[d][w];
-					
-					// 처음
-					if (k == 0) {
-						prev = current;
-						k++;
-					}
-					// 이전 값과 같다면
-					else if (current == prev) {
-						k++;
-					}
-					// 이전 값과 다르다면
-					else if (current != prev) {
-						prev = current;
-						k = 1;
-					}
-					
-					if (k == K) {
-						isPass = true;
-						break;
-					}
-				}
-				
-				if (isPass) {
-					passCnt++;  // 통과 횟수 증가시키고 다음 열 검사하러가기
-				}
-				else {
-					break;  // 다음 열 검사 안함
-				}
-			}
-			
-			// 모든 열이 합격기준에 통과했다면
-			if (passCnt == W) {
-				min = Math.min(min, usedCnt);
-			}
-			
-			return;  // 다음 경우의 수로 가기 위해 리턴
-		}
-
-		// 유도부분
-		// 약품 처리할 행만 백업
-		int[] original = new int[W];
-		for (int w = 0; w < W; w++) {
-			original[w] = cells[cnt][w];
-		}
-
-		// 경우1: 약품 사용 안함
-		subset(cnt + 1, usedCnt);
-
-		// 경우2: 약품 A 사용
-		for (int w = 0; w < W; w++) {
-			cells[cnt][w] = A;
-		}
-		subset(cnt + 1, usedCnt + 1);
-
-		// 경우3: 약품 B 사용
-		for (int w = 0; w < W; w++) {
-			cells[cnt][w] = B;
-		}
-		subset(cnt + 1, usedCnt + 1);
-		
-		// 복원
-		cells[cnt] = original;
-	}
+    static int D, W, K;
+    static int min;
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
+        int T = Integer.parseInt(br.readLine());
+        for (int test = 1; test <= T; test++) {
+            StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+            D = Integer.parseInt(st.nextToken());
+            W = Integer.parseInt(st.nextToken());
+            K = Integer.parseInt(st.nextToken());
+            String[][] film = new String[D][W];
+            for (int d = 0; d < D; d++) {
+                st = new StringTokenizer(br.readLine(), " ");
+                for (int w = 0; w < W; w++) {
+                    film[d][w] = st.nextToken();
+                }
+            }
+            min = K+1;
+            dfs(0, 0, film);
+            sb.append("#").append(test).append(" ").append(min).append("\n");
+        }
+        bw.write(sb.toString());
+        bw.flush();
+    }
+ 
+    private static void dfs(int startIdx, int k, String[][] film) {
+        if(min <= k) {
+            return;
+        }
+        if(inspect(film)) {
+            min = k;
+            return;
+        }
+        if(k == K && min > k) {
+            min = k;
+            return;
+        }
+        for (int i = startIdx; i < D; i++) {
+            ArrayDeque<Integer> changCol = new ArrayDeque<>();
+            // A 약물처리 1 -> 0
+            for (int j = 0; j < W; j++) {
+                if(film[i][j].equals("1")) {
+                    film[i][j] = "0";
+                    changCol.offer(j);
+                }
+            }
+            dfs(i+1, k+1, film);
+            // 약물복원
+            while(!changCol.isEmpty()) {
+                int colIdx = changCol.poll();
+                film[i][colIdx] = "1";
+            }
+             
+            // B 약물 처리 0->1
+            for (int j = 0; j < W; j++) {
+                if(film[i][j].equals("0")) {
+                    film[i][j] = "1";
+                    changCol.offer(j);
+                }
+            }
+            dfs(i+1, k+1, film);
+            // 약물복원
+            while(!changCol.isEmpty()) {
+                int colIdx = changCol.poll();
+                film[i][colIdx] = "0";
+            }
+        }
+    }
+ 
+    private static boolean inspect(String[][] film) {
+        for(int w = 0; w < W; w++) {
+            int stack = 1;
+            for(int d = 0; d < D-1; d++) {
+                if(film[d][w].equals(film[d+1][w])) {
+                    stack++;
+                } else {
+                    stack = 1;
+                }
+                if(stack == K) {
+                    break;
+                }
+            }
+            if(stack != K) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
