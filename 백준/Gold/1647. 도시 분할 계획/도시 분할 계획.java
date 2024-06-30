@@ -18,29 +18,29 @@ class Main {
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 	static int houseCnt, roadCnt, parents[];
-	static ArrayList<Edge> edgeList;
+	static PriorityQueue<Edge> edgeList;
 	public static void main(String[] args) throws IOException
 	{
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		houseCnt = Integer.parseInt(st.nextToken());
 		roadCnt = Integer.parseInt(st.nextToken());
 		parents = new int[houseCnt+1];
-		edgeList = new ArrayList<>();
+		edgeList = new PriorityQueue<>();
 		for (int i = 0; i < roadCnt; ++i) {
 			st = new StringTokenizer(br.readLine().trim());
 			int from = Integer.parseInt(st.nextToken());
 			int to = Integer.parseInt(st.nextToken());
 			int weight = Integer.parseInt(st.nextToken());
-			edgeList.add(new Edge(from, to, weight));
+			edgeList.offer(new Edge(from, to, weight));
 		}
 		make();
-		Collections.sort(edgeList);
 		int priceSum = 0;
 		int newRoadCnt = 0;
-		for(Edge edge : edgeList) {
+		while(newRoadCnt < houseCnt - 2) {
+			Edge edge = edgeList.poll();
 			if(!union(edge.start, edge.end)) continue;
-			if(++newRoadCnt == houseCnt - 1) break;
 			priceSum += edge.weight;
+			newRoadCnt++;
 		}
 		bw.append(Integer.toString(priceSum));
 		bw.flush();
