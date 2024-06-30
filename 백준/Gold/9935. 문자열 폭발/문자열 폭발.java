@@ -9,31 +9,30 @@ class Main {
 		String str = br.readLine();
 		String bomb = br.readLine();
 		
-		Stack<Character> stack = new Stack<>();
-		for(int i = 0; i < str.length(); i++) {
-			stack.push(str.charAt(i));
-			if(stack.size() < bomb.length()) continue;
-			boolean explode = true;
-			for(int check = 0; check < bomb.length(); check++) {
-				if(stack.get(stack.size()-1-check) != bomb.charAt(bomb.length()-1-check)) {
-					explode = false;
+		char[] stack = new char[str.length()];
+		int explodedSize = 0;
+		char lastBombChar = bomb.charAt(bomb.length() - 1);
+		for(int curIdx = 0; curIdx < str.length(); curIdx++) {
+			stack[curIdx - explodedSize] = str.charAt(curIdx);
+			if(str.charAt(curIdx) != lastBombChar) continue;
+			boolean exploded = true;
+			for(int check = 0; check < bomb.length() - 1; check++ ) {
+				if(curIdx - explodedSize - check - 1 < 0 
+					|| stack[curIdx - explodedSize - check - 1] != bomb.charAt(bomb.length() - 1 - check - 1)) {
+					exploded = false;
 					break;
 				}
 			}
-			if(explode) {
-				for(int j=0; j<bomb.length(); j++) {
-					stack.pop();
-				}
-			}
+			if(!exploded) continue;
+			explodedSize += bomb.length();
 		}
-		if(stack.size() > 0) {
-			for(char c : stack) {
-				bw.append(Character.toString(c));
-			}
-		}else {
+		if(explodedSize == str.length()) {
 			bw.append("FRULA");
+		}else {
+			for(int i = 0; i < str.length() - explodedSize; i++) {
+				bw.append(Character.toString(stack[i]));
+			}
 		}
-		
 		bw.flush();
 	}
 }
