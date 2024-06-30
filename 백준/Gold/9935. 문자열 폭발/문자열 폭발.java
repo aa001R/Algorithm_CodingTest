@@ -29,9 +29,7 @@ class Main {
 		if(explodedSize == str.length()) {
 			bw.append("FRULA");
 		}else {
-			for(int i = 0; i < str.length() - explodedSize; i++) {
-				bw.append(Character.toString(stack[i]));
-			}
+			bw.append(new String(stack, 0, str.length() - explodedSize));
 		}
 		bw.flush();
 	}
