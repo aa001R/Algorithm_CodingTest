@@ -2,29 +2,41 @@ import java.util.*;
 import java.io.*;
 
 class Main {
+	static int N, arrNum[], diffIdx[];
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		int N = Integer.parseInt(br.readLine());
-		int [] arrNum = new int[N];
-		int [] diffIdx = new int[N];
+		N = Integer.parseInt(br.readLine());
+		arrNum = new int[N];
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		ArrayDeque<Integer> stack = new ArrayDeque<>();
-		for(int i = 0; i < N; i++) {
-			arrNum[i] = Integer.parseInt(st.nextToken());
-			while(!stack.isEmpty() && arrNum[stack.peek()] != arrNum[i]) {
-				int idx = stack.pop();
-				diffIdx[idx] = i+1;
+		int now = Integer.parseInt(st.nextToken());
+		for(int i = 1; i < N; i++) {
+			int cur = Integer.parseInt(st.nextToken());
+			if(now != cur) {
+				now = cur;
+				arrNum[i] = arrNum[i-1] + 1; 
+			}else {
+				arrNum[i] = arrNum[i-1];
 			}
-			stack.push(i);
 		}
-		while(!stack.isEmpty()) {
-			int idx = stack.pop();
-			diffIdx[idx] = -1;
-		}
-		for(int idx : diffIdx) {
-			bw.append(Integer.toString(idx)).append(" ");
-		}
+		for (int i = 0; i < N; i++) {
+			bw.append(Integer.toString(binarySearch(i))).append(" ");
+        }
 		bw.flush();
+	}
+
+	private static int binarySearch(int idx) {
+		int start = idx;
+		int end = N;
+		while(start < end) {
+			int mid = (start + end) / 2;
+			if(arrNum[idx] < arrNum[mid]) {
+				end = mid;
+			}else{
+				start = mid + 1;
+			}
+		}
+		if(end == N) return -1;
+		return end+1;
 	}
 }
