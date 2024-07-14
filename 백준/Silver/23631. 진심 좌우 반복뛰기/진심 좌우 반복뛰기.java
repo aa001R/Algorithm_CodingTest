@@ -8,22 +8,29 @@ class Main {
 		for(int test = 0; test < T; test++) {
 			int N = read();
 			int K = read();
-			int dir = 1;
-			int posX = 0;
-			int totalLen = 0;
-			for(int i = 1; totalLen < N; totalLen+= (K*i), i++) {
-				if( totalLen+(K*i) < N) { 
-					posX += (K*i)*dir;
-					dir *= -1;
-				}
-				else {
-					posX += (N-1-totalLen)*dir;
-				}
+			long count = binarySearch(0, 5000, N, K);
+			long diff = N-1 - (count+1)*count*K/2;
+			
+			if(count%2 == 0) {
+				long num = -1 * K * (count/2) - diff;
+				bw.append(Long.toString(num)).append(" ").append("L\n");
+			} else {
+				long num = K * (count/2+1) + diff;
+				bw.append(Long.toString(num)).append(" ").append("R\n");
 			}
-			bw.append(Integer.toString(posX)).append(" ").append(dir==1?"R":"L");
-			bw.newLine();
 		}
 		bw.flush();
+	}
+	
+	private static long binarySearch(long start, long end, int n, int k) {
+		if(start >= end)
+			return start;
+		long middle = (start+end)/2;
+		
+		if((middle+1)*middle*k/2 >= n)
+			return binarySearch(start, middle, n, k);
+		else
+			return binarySearch(middle+1, end, n, k);
 	}
 	
 	static public int read() throws Exception {
