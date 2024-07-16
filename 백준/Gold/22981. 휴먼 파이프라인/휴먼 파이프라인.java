@@ -18,12 +18,9 @@ class Main {
 		
 		long maxTeamWork = 0;
 		for(int i = 0; i < N-1; i++) {
-			long teamWork = workPerMinute.get(0) * (i+1) + workPerMinute.get(i+1) * (N - (i+1)); 
-			if(teamWork <= maxTeamWork) continue;
-			maxTeamWork = teamWork;
+			maxTeamWork = Math.max(maxTeamWork,  workPerMinute.get(0) * (i+1) + workPerMinute.get(i+1) * (N - (i+1)));
 		}
-		long workTime = K % maxTeamWork == 0 ? K / maxTeamWork : K / maxTeamWork + 1;
-		bw.append(Long.toString(workTime));
+		bw.append(Long.toString(K % maxTeamWork == 0 ? K / maxTeamWork : K / maxTeamWork + 1));
 		bw.flush();
 	}
 }
