@@ -27,11 +27,9 @@ public class Main {
                 min = sum;
                 minL = left; minR = right;
             }
-            if(sum>=0) {
-                right--;
-            }else {
-                left++;
-            }
+            if(sum == 0) return;
+            else if(sum>0) right--;
+            else left++;
         }
     }
 }
