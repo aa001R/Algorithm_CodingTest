@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Main {
 	public static class Work {
@@ -19,27 +18,21 @@ public class Main {
 		int totalPrice = 0;
 
 		ArrayList<Work> work = new ArrayList<>();
-		work.add(new Work(0, 0));
 		for (int i = 1; i <= n; i++) {
 			int d = read();
 			int m = read();
 			work.add(new Work(d, m));
 			totalPrice += m;
 		}
-
-		Collections.sort(work, (w1, w2) -> w1.day - w2.day);
-
-		int[][] dp = new int[n + 1][t + 1];
-		for (int i = 1; i <= n; i++) {
-			for (int j = 0; j <= t; j++) {
-				if (work.get(i).day <= j) {
-					dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - work.get(i).day] + work.get(i).price);
-				} else {
-					dp[i][j] = dp[i - 1][j];
+		int[] dp = new int[t + 1];
+		for(int i = 0; i < n; i++) {
+			for(int j = t; j >= 0; j--) {
+				if(work.get(i).day <= j) {
+					dp[j] = Math.max(dp[j], dp[j-work.get(i).day]+work.get(i).price);
 				}
 			}
 		}
-		System.out.println(totalPrice - dp[n][t]);
+		System.out.println(totalPrice - dp[t]);
 	}
 
 	public static int read() throws IOException {
@@ -48,9 +41,9 @@ public class Main {
 		if (isNegative) {
 			n = System.in.read() & 15;
 		}
-		while((cur = System.in.read()) > 32) {
+		while ((cur = System.in.read()) > 32) {
 			n = (n << 3) + (n << 1) + (cur & 15);
 		}
-		return isNegative? ~n + 1 : n;
+		return isNegative ? ~n + 1 : n;
 	}
 }
