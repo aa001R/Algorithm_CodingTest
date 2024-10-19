@@ -1,29 +1,47 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		int H = read();
 		int W = read();
-		int[] height = new int[W];
+		int[] map = new int[W];
 		int rain = 0;
-		for(int i=0;i<W;i++)
-			height[i] = read();
+		for (int i = 0; i < W; i++)
+			map[i] = read();
 
-		for(int i=1;i<W-1;i++){
-			int left = 0, right = 0;	//좌측, 우측 최대 높이 블럭 변수
-
-			for(int j=0;j<i;j++)
-				left = Math.max(left, height[j]);
-			for(int j=i+1;j<W;j++)
-				right = Math.max(right, height[j]);
-
-			if(height[i] < left && height[i] < right){
-				rain += Math.min(left, right) - height[i];
+		ArrayDeque<Integer> stack = new ArrayDeque<>();
+		int left = 0, right = 0;
+		for (int i = 0; i < W; i++) {
+			if (stack.isEmpty()) {
+				if (map[i] != 0) {
+					left = map[i];
+					stack.push(left);
+				}
+			} else if (left > map[i]) {
+				stack.push(map[i]);
+			} else {
+				while (!stack.isEmpty()) {
+					rain += (left - stack.pop());
+				}
+				left = map[i];
+				stack.push(left);
 			}
 		}
-		bw.write(rain + "");	//고인 모든 빗물 양 BufferedWriter 저장
-		bw.flush();		//결과 출력
+		if(!stack.isEmpty()) {
+			right = stack.pop();
+		}
+		while (!stack.isEmpty()) {
+			int cur = stack.pop();
+			if (right >= cur) {
+				rain += (right - cur);
+			} else {
+				right = cur;
+			}
+		}
+		bw.write(rain + "");
+		bw.flush();
 	}
 
 	public static int read() throws IOException {
