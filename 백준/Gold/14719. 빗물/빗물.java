@@ -1,47 +1,47 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		int H = read();
 		int W = read();
 		int[] map = new int[W];
-		int rain = 0;
 		for (int i = 0; i < W; i++)
 			map[i] = read();
 
-		ArrayDeque<Integer> stack = new ArrayDeque<>();
-		int left = 0, right = 0;
-		for (int i = 0; i < W; i++) {
-			if (stack.isEmpty()) {
-				if (map[i] != 0) {
-					left = map[i];
-					stack.push(left);
+		int left = 0, right = W - 1;
+		int leftMax = map[left++], rightMax = map[right--];
+		int rain = 0;
+
+		// 벽이 없으면 물이 고일 수 없도록 처리
+		if (W < 3) {
+			System.out.println(0);
+			return;
+		}
+
+		while (left <= right) {
+			if (leftMax < rightMax) {
+				// 왼쪽 벽을 기준으로 물을 고임
+				if (map[left] < leftMax) {
+					rain += leftMax - map[left];
+				} else {
+					leftMax = map[left];
 				}
-			} else if (left > map[i]) {
-				stack.push(map[i]);
+				left++;
 			} else {
-				while (!stack.isEmpty()) {
-					rain += (left - stack.pop());
+				// 오른쪽 벽을 기준으로 물을 고임
+				if (map[right] < rightMax) {
+					rain += rightMax - map[right];
+				} else {
+					rightMax = map[right];
 				}
-				left = map[i];
-				stack.push(left);
+				right--;
 			}
 		}
-		if(!stack.isEmpty()) {
-			right = stack.pop();
-		}
-		while (!stack.isEmpty()) {
-			int cur = stack.pop();
-			if (right >= cur) {
-				rain += (right - cur);
-			} else {
-				right = cur;
-			}
-		}
-		bw.write(rain + "");
-		bw.flush();
+
+		System.out.println(rain);  // 고인 빗물 양을 출력
 	}
 
 	public static int read() throws IOException {
