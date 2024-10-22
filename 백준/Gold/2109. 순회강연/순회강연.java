@@ -1,64 +1,53 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Main {
-
-	static class Schedule implements Comparable<Schedule>{
-		int day;
-		int pay;
-		
-		public Schedule(int day, int pay){
-			this.day = day;
-			this.pay = pay;
-		}
-
-		@Override
-		public int compareTo(Schedule o) {
-			if(o.pay!= this.pay) return o.pay - this.pay;
-			else return this.day-o.day;
-		}
-	}
-	
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int n = Integer.parseInt(br.readLine());
-		
-		List<Schedule> list = new ArrayList<>();
-		StringTokenizer st = null;
+	public static void main(String[] args) throws IOException {
+		int N = read();
+		int[][] dayPay = new int[N][2];
 		int max = 0;
-		for(int i=0; i<n; i++) {
-			st = new StringTokenizer(br.readLine());
-			int pay = Integer.parseInt(st.nextToken());
-			int day = Integer.parseInt(st.nextToken());
-			max = Math.max(max, day);
-			list.add(new Schedule(day, pay));
+		for (int i = 0; i < N; i++) {
+			int p = read();
+			int d = read();
+			if (max < d) {
+				max = d;
+			}
+			dayPay[i][0] = p;
+			dayPay[i][1] = d;
 		}
-		
-		Queue<Schedule> q = new PriorityQueue<>();
-		for(Schedule s : list) {
-			q.add(s);	
-		}
-		
-		boolean[] checked = new boolean[max+1];
-		int result = 0;
-		while(!q.isEmpty()) {
-			Schedule s = q.poll();
-			
-			for(int i = s.day; i>0; i--) {
-				if(!checked[i]) {
-					checked[i] = true;
-					result += s.pay;
+		Arrays.sort(dayPay, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				if (o1[0] == o2[0])
+					return o1[1] - o2[1];
+				return o2[0] - o1[0];
+			}
+		});
+
+		boolean[] worked = new boolean[max + 1];
+		int sumPay = 0;
+		for (int i = 0; i < N; i++) {
+			for(int j = dayPay[i][1]; j > 0; j--){
+				if(!worked[j]){
+					worked[j] = true;
+					sumPay += dayPay[i][0];
 					break;
 				}
 			}
 		}
-		System.out.println(result);
-		
+		System.out.println(sumPay);
+	}
+
+	public static int read() throws IOException {
+		int cur, n = System.in.read() & 15;
+		boolean isNegative = (n == 13);
+		if (isNegative) {
+			n = System.in.read() & 15;
+		}
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return isNegative ? ~n + 1 : n;
 	}
 }
