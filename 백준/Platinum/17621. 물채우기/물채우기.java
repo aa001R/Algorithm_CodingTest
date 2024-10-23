@@ -1,93 +1,109 @@
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
-	public static class Column {
-		int startY, endY;
-		int[] waterH;
-		public Column(int startY, int endY) {
-			this.startY = startY;
-			this.endY = endY;
-			waterH = new int[2];
-		}
-	}
 
-	static Column[] columns;
 	static int N, M;
+	static long[] A = new long[101010];
+	static long[] B = new long[101010];
+	static long[] height = new long[101010];
+	static long[] height2 = new long[101010];
+
 	public static void main(String[] args) throws IOException {
-		N = read();
-		M = read();
-		columns = new Column[M];
-		for (int i = 0; i < M; i++) {
-			int startY = read();
-			int endY = read();
-			if (endY == 0) {
-				// 비어있는 물에 대해서도 동일하게 계산하기 위해 치환
-				startY = N + 1;
-				endY = N + 1;
-			}
-			columns[i] = new Column(startY, endY);
-		}
-		// 바닥에 붙어있는 덩어리만 고려하여 물이 고이는 높이 (waterH[0]) 계산
-		calcWaterH(0, M, 1, 0); // left -> right
-		calcWaterH(M - 1, -1, -1, 0); // left <- right
-		// 공중에 뜬 덩어리만 고려하여 물이 고이는 높이 (waterH[1]) 계산
-		calcFloatingWaterH();
-		// 물이 고이는 칸의 총 개수 계산
-		System.out.println(calcTotalWater());
-	}
+		N = read(); // 사용자 정의 read 메서드를 사용
+		M = read(); // 사용자 정의 read 메서드를 사용
 
-	private static void calcWaterH(int start, int end, int dir, int target) {
-		int min = N + 1;
-		for (int cur = start; cur != end; cur += dir) {
-			if (target != 0 || columns[cur].endY >= N) {
-				// 바닥에 붙어 있는 덩어리만 고려시(target == 0) - 공중에 뜬 덩어리는 제외
-				min = Math.min(min, columns[cur].startY);
-			}
-			columns[cur].waterH[target] = Math.max(min, columns[cur].waterH[target]);
+		for (int i = 1; i <= M; i++) {
+			A[i] = read();
+			B[i] = read();
+			height[i] = height2[i] = N + 1;
 		}
-	}
 
-	private static void calcFloatingWaterH() {
-		for (int start = 0; start < M; ) {
-			if (columns[start].endY >= N) {
-				start++;
+		// 왼쪽에서 최소값을 구해 height 배열 업데이트
+		long mn = N + 1;
+		for (int i = 1; i <= M; i++) {
+			if (B[i] == N) {
+				mn = Math.min(mn, A[i]);
+			}
+			height[i] = mn;
+		}
+
+		// 오른쪽에서 최소값을 구해 height 배열 업데이트
+		mn = N + 1;
+		for (int i = M; i >= 1; i--) {
+			if (B[i] == N) {
+				mn = Math.min(mn, A[i]);
+			}
+			height[i] = Math.max(mn, height[i]);
+		}
+
+		long ans = 0;
+
+		// 높이를 바탕으로 결과 계산
+		for (int i = 1; i <= M; i++) {
+			if (B[i] != N) {
+				ans += N + 1 - height[i];
 			} else {
-				int end = start + 1;
-				for (; end < M; end++) {
-					if (isNotLink(end, end - 1)) {
-						break;
+				ans += A[i] - height[i];
+			}
+		}
+
+		// 연속된 범위에 대한 추가 처리
+		long start = 0;
+		for (int i = 1; i <= M; i++) {
+			if (B[i] != 0 && B[i] != N) {
+				if (start != 0) {
+					if (A[i - 1] > B[i] || A[i] > B[i - 1]) {
+						ans += get(start, i - 1);
+						start = 0;
 					}
 				}
-				calcWaterH(start, end, 1, 1);
-				calcWaterH(end - 1, start - 1, -1, 1);
-				start = end;
-			}
-		}
-	}
-
-	private static boolean isNotLink(int a, int b) {
-		return (columns[a].startY > columns[b].endY || columns[a].endY < columns[b].startY);
-	}
-
-	private static long calcTotalWater() {
-		long sum = 0;
-		for (int cur = 0; cur < M; cur++) {
-			if(columns[cur].endY >= N){
-				// 바닥에 붙어있는 (덩어리 기반) 물 높이
-				sum += columns[cur].startY - columns[cur].waterH[0];
+				if (start == 0) {
+					start = i;
+				}
 			} else {
-				// 공중에 뜬 덩어리 내의 물 높이
-				sum += columns[cur].startY - columns[cur].waterH[1];
-				// 공중에 뜬 덩어리 아래의 물 높이
-				sum += N + 1 - columns[cur].waterH[0];
-				// 공중에 뜬 덩어리와 물이 아래 물에 포함될 경우 빼주기
-				int underWaterH = Math.max(columns[cur].waterH[0], columns[cur].waterH[1]);
-				if(underWaterH <= columns[cur].endY){
-					sum -= (columns[cur].endY - underWaterH + 1);
+				if (start != 0) {
+					ans += get(start, i - 1);
+					start = 0;
 				}
 			}
 		}
+		if (start != 0) {
+			ans += get(start, M);
+		}
+
+		System.out.println(ans);
+	}
+
+	// 특정 범위에 대한 최소 높이를 계산하고 결과를 반환하는 함수
+	static long get(long left, long right) {
+		long mn = N + 1;
+
+		// 왼쪽에서 최소값 계산 후 height2 배열 업데이트
+		for (long i = left; i <= right; i++) {
+			mn = Math.min(mn, A[(int)i]);
+			height2[(int)i] = mn;
+		}
+
+		mn = N + 1;
+		// 오른쪽에서 최소값 계산 후 height2 배열 업데이트
+		for (long i = right; i >= left; i--) {
+			mn = Math.min(mn, A[(int)i]);
+			height2[(int)i] = Math.max(mn, height2[(int)i]);
+		}
+
+		// A[i]와 height2[i]의 차이를 계산하여 sum에 누적
+		long sum = 0;
+		for (long i = left; i <= right; i++) {
+			sum += A[(int)i] - height2[(int)i];
+		}
+
+		// B[i] 값과 비교하여 sum에서 차이를 뺌
+		for (long i = left; i <= right; i++) {
+			if (B[(int)i] >= height[(int)i]) {
+				sum -= B[(int)i] - Math.max(height[(int)i], height2[(int)i]) + 1;
+			}
+		}
+
 		return sum;
 	}
 
