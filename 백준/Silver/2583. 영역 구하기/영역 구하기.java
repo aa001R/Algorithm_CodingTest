@@ -1,33 +1,23 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int M, N, K;
 	static boolean [][] area;
 	static List<Integer> areaSize;
-	public static void main(String[] args) throws IOException{		
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		M = Integer.parseInt(st.nextToken());
-		N = Integer.parseInt(st.nextToken());
-		K = Integer.parseInt(st.nextToken());
+		M = read();
+		N = read();
+		K = read();
 		area = new boolean[M][N];
 		areaSize = new ArrayList<>();
 		for(int k = 0; k < K; k++) {
-			st = new StringTokenizer(br.readLine(), " ");
-			int startX = Integer.parseInt(st.nextToken());
-			int startY = M-1 - Integer.parseInt(st.nextToken());
-			int endX = Integer.parseInt(st.nextToken());
-			int endY = M-1 - Integer.parseInt(st.nextToken());
+			int startX = read();
+			int startY = read();
+			int endX = read();
+			int endY = read();
 			drawRectangle(startX, startY, endX, endY);
 		}
 		for(int i = 0; i < M; i++) {
@@ -39,13 +29,13 @@ public class Main {
 		Collections.sort(areaSize);
 		bw.append(Integer.toString(areaSize.size())); bw.newLine();
 		for(int i = 0; i < areaSize.size(); i++) {
-				bw.append(Integer.toString(areaSize.get(i))).append(" ");
+			bw.append(Integer.toString(areaSize.get(i))).append(" ");
 		}
 		bw.flush();
 	}
 
 	private static void drawRectangle(int startX, int startY, int endX, int endY) {
-		for(int r = startY; r > endY; r--) {
+		for(int r = startY; r < endY; r++) {
 			for(int c = startX; c < endX; c++) {
 				area[r][c] = true;
 			}
@@ -72,8 +62,20 @@ public class Main {
 		}
 		areaSize.add(size);
 	}
-	
+
 	private static boolean isOut(int r, int c) {
 		return (r < 0 || r >= M || c < 0 || c >= N);
+	}
+
+	static int read() throws Exception {
+		int n = System.in.read() & 15, cur;
+		boolean isNegative = n == 13;
+		if (isNegative) {
+			n = System.in.read() & 15;
+		}
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return isNegative ? -n : n;
 	}
 }
