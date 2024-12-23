@@ -3,38 +3,43 @@ import java.util.*;
 
 public class Main {
 	static int N;
-	static String[] board;
+	static char[][] image;
+	static StringBuilder sb = new StringBuilder();
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		N = read();
-		board = new String[N];
-		for(int i = 0; i < N; i++) {
-			board[i] = br.readLine();
+		image = new char[N][N];
+		for (int i = 0; i < N; i++) {
+			String line = br.readLine();
+			for (int j = 0; j < N; j++) {
+				image[i][j] = line.charAt(j);
+			}
 		}
-		bw.write(div(0, 0,  N-1, N-1));
-		bw.flush();
+
+		quad(image, 0, 0, N);
+		System.out.println(sb);
 	}
 
-	static String div(int startR, int startC, int endR, int endC) {
-		if(startR == endR && startC == endC){
-			return String.valueOf(board[startR].charAt(startC));
+	static void quad(char[][] image, int x, int y, int size) {
+		if (IsPossible(image, x, y, size, image[x][y])) {
+			sb.append(image[x][y]);
+			return;
 		}
-		StringBuilder sb = new StringBuilder();
-		int midR = (startR+endR)/2;
-		int midC = (startC+endC)/2;
-		String leftUp = div(startR, startC, midR, midC);
-		String rightUp = div(startR, midC+1, midR, endC);
-		String leftDown = div(midR+1, startC, endR, midC);
-		String rightDown = div(midR+1, midC+1, endR, endC);
+		sb.append("(");
+		quad(image, x, y, size / 2);
+		quad(image, x, y + size / 2, size / 2);
+		quad(image, x + size / 2, y, size / 2);
+		quad(image, x + size / 2, y + size / 2, size / 2);
+		sb.append(")");
+	}
 
-		if((leftUp.equals("0") && leftDown.equals("0") && rightUp.equals("0") && rightDown.equals("0")) 
-		   || (leftUp.equals("1") && leftDown.equals("1") && rightUp.equals("1") && rightDown.equals("1"))) {
-			sb.append(leftUp);
-		}else {
-			sb.append("(").append(leftUp).append(rightUp).append(leftDown).append(rightDown).append(")");
+	static boolean IsPossible(char[][] image, int x, int y, int size, int val) {
+		for (int i = x; i < x + size; i++) {
+			for (int j = y; j < y + size; j++) {
+				if (image[i][j] != val) return false;
+			}
 		}
-		return sb.toString();
+		return true;
 	}
 
 	static int read() throws Exception {
