@@ -1,25 +1,17 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int N, max;
 	static int [][] area;
 	static boolean[] check = new boolean[101];
-	public static void main(String[] args) throws IOException{		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) throws Exception {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st = null;
-		N = Integer.parseInt(br.readLine());
+		N = read();
 		area = new int[N][N];
 		for(int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine(), " ");
 			for(int j = 0; j < N; j++) {
-				area[i][j] = Integer.parseInt(st.nextToken());
+				area[i][j] = read();
 			}
 		}
 		max = 1;
@@ -33,39 +25,52 @@ public class Main {
 		bw.write(Integer.toString(max));
 		bw.flush();
 	}
+
 	private static void rainHight(int rain) {
 		int cnt = 0;
-		boolean [][] rainAfterArea = new boolean[N][N];
+		boolean [][] areaAfterRain = new boolean[N][N];
 		for(int i = 0; i < N; i++) {
 			for(int j = 0; j < N; j++) {
-				if(rainAfterArea[i][j] || area[i][j] <= rain ) continue;
+				if(areaAfterRain[i][j] || area[i][j] <= rain ) continue;
 				cnt++;
-				bfs(i, j, rainAfterArea, rain);
+				bfs(i, j, areaAfterRain, rain);
 			}
 		}
 		max = Math.max(max, cnt);
 	}
-	
-	private static void bfs(int i, int j, boolean[][] rainAfterArea, int rain) {
+
+	private static void bfs(int i, int j, boolean[][] areaAfterRain, int rain) {
 		int [][] delta = {{0, 1},{0, -1},{1, 0},{-1, 0}};
 		ArrayDeque<int []> que = new ArrayDeque<>();
 		que.offer(new int[] {i, j});
-		rainAfterArea[i][j] = true;
+		areaAfterRain[i][j] = true;
 		while(!que.isEmpty()) {
 			int[] cur = que.poll();
 			for(int d = 0; d < 4; d++) {
 				int r = cur[0] + delta[d][0];
 				int c = cur[1] + delta[d][1];
 				if(isOut(r, c)) continue;
-				if(rainAfterArea[r][c]) continue;
-				rainAfterArea[r][c] = true;
+				if(areaAfterRain[r][c]) continue;
+				areaAfterRain[r][c] = true;
 				if(area[r][c]<=rain) continue;
 				que.offer(new int[] {r,c});
 			}
-		}		
+		}
 	}
-	
+
 	private static boolean isOut(int r, int c) {
 		return (r < 0 || r >= N || c < 0 || c >= N);
+	}
+
+	static int read() throws Exception {
+		int n = System.in.read() & 15, cur;
+		boolean isNegative = n == 13;
+		if (isNegative) {
+			n = System.in.read() & 15;
+		}
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return isNegative ? -n : n;
 	}
 }
