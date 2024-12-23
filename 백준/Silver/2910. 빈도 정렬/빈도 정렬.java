@@ -15,7 +15,7 @@ public class Main {
 		}
 
 		List<Integer> keySet = new ArrayList<>(map.keySet());
-		keySet.sort(new Comparator<Integer>() {
+		Collections.sort(keySet, new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
 				return map.get(o2).compareTo(map.get(o1));
