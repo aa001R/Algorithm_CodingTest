@@ -4,28 +4,28 @@ import java.util.*;
 public class Main {
 	static int N, C;
 	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		N = read();
 		C = read();
-		HashMap<Integer, Integer> map = new HashMap<>();
-		ArrayList<Integer> list = new ArrayList<>();
-		List<Integer> original = new ArrayList<>();
+		HashMap<Integer, Integer> map = new LinkedHashMap<>();
+
 		for (int i = 0; i < N; i++) {
-			list.add(read());
-			original.add(list.get(i));
-			map.put(list.get(i), map.getOrDefault(list.get(i), 0) + 1);
+			int key = read();
+			map.put(key, map.getOrDefault(key, 0) + 1);
 		}
 
-		Collections.sort(list, (o1, o2) -> {
-			if (map.get(o1) == map.get(o2)) {
-				return original.indexOf(o1) - original.indexOf(o2);
-			} else {
-				return Integer.compare(map.get(o2), map.get(o1));
+		List<Integer> keySet = new ArrayList<>(map.keySet());
+		keySet.sort(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return map.get(o2).compareTo(map.get(o1));
 			}
 		});
-		for (Integer num : list) {
-			bw.append(Integer.toString(num)).append(" ");
+
+		for (Integer key : keySet) {
+			for(int i=0;i<map.get(key);i++){
+				bw.append(Integer.toString(key)).append(" ");
+			}
 		}
 		bw.flush();
 	}
