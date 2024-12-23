@@ -1,34 +1,24 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int cnt;
 	static boolean [][] farm;
-	static int M;
-	static int N;
-	static int K;
-	
+	static int M, N, K;
+
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		int T = Integer.parseInt(br.readLine());
+		int T = read();
 		for(int test = 0; test < T; test++) {
-			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-			M = Integer.parseInt(st.nextToken());
-			N = Integer.parseInt(st.nextToken());
-			K = Integer.parseInt(st.nextToken());
+			M = read();
+			N = read();
+			K = read();
 			farm = new boolean[N][M];
 			ArrayList<int[]> cabbage = new ArrayList<>();
 			for(int k = 0; k < K; k++) {
-				st = new StringTokenizer(br.readLine(), " ");
-				int c = Integer.parseInt(st.nextToken());
-				int r = Integer.parseInt(st.nextToken());
+				int c = read();
+				int r = read();
 				farm[r][c] = true;
 				cabbage.add(new int[] {r, c});
 			}
@@ -41,7 +31,7 @@ public class Main {
 		}
 		bw.flush();
 	}
-	
+
 	static void dfs(int [] cabbage){
 		if(!farm[cabbage[0]][cabbage[1]]) {
 			return;
@@ -61,10 +51,21 @@ public class Main {
 				}
 			}
 		}
-		
 	}
-	
+
 	static boolean isIn(int r, int c) {
 		return (r >= 0 && r < N && c >= 0 && c < M);
+	}
+
+	static int read() throws Exception {
+		int n = System.in.read() & 15, cur;
+		boolean isNegative = n == 13;
+		if (isNegative) {
+			n = System.in.read() & 15;
+		}
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return isNegative ? -n : n;
 	}
 }
