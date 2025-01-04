@@ -18,9 +18,7 @@ public class Main {
                 numbers.add(new BigInteger(matcher.group()));
             }
         }
-
         Collections.sort(numbers);
-
         for (BigInteger number : numbers) {
             bw.append(number.toString()).append("\n");
         }
