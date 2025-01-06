@@ -1,109 +1,90 @@
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 	static int N, L, R;
-	static int[][] nation;
-	static int[] parent, sum, cnt;
-	static boolean move;
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static AtomicInteger[][] nation;
+	static 	int[][] delta = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+	public static void main(String[] args) throws Exception {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-		N = Integer.parseInt(st.nextToken());
-		L = Integer.parseInt(st.nextToken());
-		R = Integer.parseInt(st.nextToken());
-		nation = new int[N][N];
-		parent = new int[N*N];
-		sum = new int[N*N];
-		cnt = new int[N*N];
+		N = read();
+		L = read();
+		R = read();
+		nation = new AtomicInteger[N][N];
 		for (int r = 0; r < N; r++) {
-			st = new StringTokenizer(br.readLine(), " ");
 			for (int c = 0; c < N; c++) {
-				nation[r][c] = Integer.parseInt(st.nextToken());
+				nation[r][c] = new AtomicInteger(read());
 			}
 		}
 
 		int day = 0;
-		do {
-			move = false;
-			makeSet();
+		while (true) {
+			boolean move = false;
 			boolean[][] visited = new boolean[N][N];
 			for (int r = 0; r < N; r++) {
 				for (int c = 0; c < N; c++) {
 					if (visited[r][c]) continue;
+					boolean isUnion = false;
+					for (int d = 0; d < 2 && !isUnion; d++){
+						isUnion |= canMove(r + delta[d][0], c + delta[d][1], nation[r][c].get(), visited);
+					}
+					if (!isUnion) continue;
 					bfs(r, c, visited);
+					move = true;
 				}
 			}
 			if (!move) {break;}
-			movePeople(visited);
 			day++;
-		}while(move);
-		
+		}
+
 		bw.write(Integer.toString(day));
 		bw.flush();
 	}
-	
-	static void makeSet() {
-		for(int i = 0; i < N*N; i++) {
-			parent[i] = i;
-		}
-	}
-	
-	static int find(int a) {
-		if(a == parent[a]) return a;
-		return parent[a] = find(parent[a]);
-	}
-	
-	static boolean union(int a, int b) {
-		int rootA = find(a);
-		int rootB = find(b);
-		if(rootA == rootB) return false;
-		parent[rootB] = rootA;
-		return true;
-	}
 
 	static void bfs(int r, int c, boolean[][] visited) {
-		Queue<int[]> que = new ArrayDeque<>();
-		visited[r][c] = true;
-		int nodeNum = r*N+c;
-		sum[nodeNum] = nation[r][c];
-		cnt[nodeNum] = 1;
+		ArrayDeque<int[]> que = new ArrayDeque<>();
 		que.offer(new int[] { r, c });
-		
-		int[][] delta = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+		visited[r][c] = true;
+		AtomicInteger union = new AtomicInteger(0);
+		int sum = 0, cnt = 0;
+
 		while (!que.isEmpty()) {
 			int[] curr = que.poll();
+			int curNationPeople = nation[curr[0]][curr[1]].get();
+			sum += curNationPeople;
+			nation[curr[0]][curr[1]] = union;
+			cnt++;
+
 			for (int d = 0; d < 4; d++) {
 				int nr = curr[0] + delta[d][0];
 				int nc = curr[1] + delta[d][1];
-				int next = nr*N+nc;
-				if (!isIn(nr, nc)) continue;
-				if (visited[nr][nc]) continue;
-				int diff = Math.abs(nation[curr[0]][curr[1]] - nation[nr][nc]);
-				if (diff < L || diff > R) continue;
+				if (!canMove(nr, nc, curNationPeople, visited)) continue;
 				que.offer(new int[] { nr, nc });
 				visited[nr][nc] = true;
-				union(nodeNum, next);
-				sum[nodeNum] += nation[nr][nc];
-				cnt[nodeNum]++;
-				move = true;
 			}
 		}
+		int avg = sum / cnt;
+		union.set(avg);
 	}
 
-	static void movePeople(boolean [][] visited) {
-		for (int r = 0; r < N; r++) {
-			for (int c = 0; c < N; c++) {
-				if (!visited[r][c]) continue;
-				nation[r][c] = sum[find(r*N+c)] / cnt[find(r*N+c)];
-			}
-		}
+	private static boolean canMove(int nr, int nc, int prev, boolean[][] visited){
+		if (!isIn(nr, nc) || visited[nr][nc]) return false;
+		int gap = Math.abs(prev - nation[nr][nc].get());
+		return L <= gap && gap <= R;
 	}
-	
+
 	static boolean isIn(int r, int c) {
 		return (0 <= r && r < N && 0 <= c && c < N);
 	}
-	
+
+	static int read() throws Exception {
+		int n = System.in.read() & 15, cur;
+		boolean isNegative = n == 13;
+		if (isNegative) { n = System.in.read() & 15; }
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return isNegative ? -n : n;
+	}
 }
