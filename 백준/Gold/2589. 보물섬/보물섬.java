@@ -1,10 +1,10 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-class Main {
+public class Main {
 	static int L, W, maxHour;
-	static char land[][];
-	public static void main(String[] args) throws IOException {
+	static char [][] land;
+	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -27,9 +27,10 @@ class Main {
 		bw.write(Integer.toString(maxHour));
 		bw.flush();
 	}
+
 	private static void bfs(int sr, int sc) {
 		ArrayDeque<int []> que = new ArrayDeque<>();
-		boolean visited[][] = new boolean[L][W];
+		boolean [][] visited = new boolean[L][W];
 		int [][] delta = {{1, 0},{0, 1},{-1, 0},{0, -1}};
 		que.offer(new int[] {sr, sc});
 		visited[sr][sc] = true;
@@ -41,8 +42,7 @@ class Main {
 				for(int d = 0; d < 4; d++) {
 					int nr = cur[0] + delta[d][0];
 					int nc = cur[1] + delta[d][1];
-					if(isOut(nr, nc)) continue;
-					if (visited[nr][nc]) continue;
+					if(isOut(nr, nc) || visited[nr][nc]) continue;
 					visited[nr][nc] = true;
 					if(land[nr][nc] == 'W') continue;
 					que.offer(new int[] {nr, nc});
