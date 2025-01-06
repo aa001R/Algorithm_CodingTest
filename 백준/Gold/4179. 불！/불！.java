@@ -3,13 +3,13 @@ import java.util.*;
 
 public class Main {
 	static int R, C;
-	static boolean [][] burnt;
+	static char [][] burnt;
 	static ArrayDeque<int []> fireQ = new ArrayDeque<>();
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		R = read(); C = read();
-		burnt = new boolean[R][C];
+		burnt = new char[R][C];
 		int [] startJi = new int [2];
 		for (int i = 0; i < R; i++) {
 			String input = br.readLine();
@@ -20,7 +20,7 @@ public class Main {
 				} else if (cur == 'F') {
 					fireQ.offer(new int[] {i, j});
 				}
-				burnt[i][j] = (cur == 'F' || cur == '#');
+				burnt[i][j] = cur;
 			}
 		}
 
@@ -47,8 +47,8 @@ public class Main {
 				for (int d = 0; d < 4; d++) {
 					int nrF = fire[0] + delta[d][0];
 					int ncF = fire[1] + delta[d][1];
-					if (isOut(nrF, ncF) || burnt[nrF][ncF]) continue;
-					burnt[nrF][ncF] = true;
+					if (isOut(nrF, ncF) || burnt[nrF][ncF] != '.') continue;
+					burnt[nrF][ncF] = 'F';
 					fireQ.offer(new int[] {nrF, ncF});
 				}
 			}
@@ -59,7 +59,7 @@ public class Main {
 					int nrJ = jihoon[0] + delta[d][0];
 					int ncJ = jihoon[1] + delta[d][1];
 					if (isOut(nrJ, ncJ)) return escapeTime;
-					if (burnt[nrJ][ncJ] || visited[nrJ][ncJ]) continue;
+					if (burnt[nrJ][ncJ] != '.' || visited[nrJ][ncJ]) continue;
 					visited[nrJ][ncJ] = true;
 					jihoonQ.offer(new int[] {nrJ, ncJ});
 				}
