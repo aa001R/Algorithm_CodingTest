@@ -4,6 +4,9 @@ import java.util.*;
 public class Main {
 	static int N, M;
 	static char [][] classroom;
+	static ArrayDeque<int []> q, chainQ;
+	static boolean[][] visited;
+	static int [][] delta = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -18,52 +21,43 @@ public class Main {
 	}
 
 	static int bfs(int y, int x, int thiefY, int thiefX) {
-		ArrayDeque<int []> q = new ArrayDeque<>();
-		boolean[][] visited = new boolean[N][M];
+		q = new ArrayDeque<>();
+		visited = new boolean[N][M];
 		q.offer(new int[] {y, x});
 		visited[y][x] = true;
-		classroom[y][x] = 0;
-		int [][] delta = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 		int jumpCnt = 0;
 		while (!q.isEmpty()) {
 			jumpCnt++;
 			for (int size = q.size(); size > 0; size--) {
 				int [] cur = q.poll();
-				ArrayDeque<int []> tempQ = new ArrayDeque<>();
-				for (int d = 0; d < 4; d++) {
-					int nextY = cur[0], nextX = cur[1];
-					while (true) {
-						nextY += delta[d][0]; nextX += delta[d][1];
-						if (isOut(nextY, nextX) || visited[nextY][nextX]) break;
-						visited[nextY][nextX] = true;
-						if (nextY == thiefY && nextX == thiefX) return jumpCnt;
-						if (classroom[nextY][nextX] == '1') {
-							q.offer(new int[] {nextY, nextX});
-							break;
-						}
-						tempQ.offer(new int[] {nextY, nextX});
-					}
-				}
-				while (!tempQ.isEmpty()) {
-					int [] chainBomb = tempQ.poll();
-					for (int d = 0; d < 4; d++) {
-						int nextY = chainBomb[0], nextX = chainBomb[1];
-						while (true) {
-							nextY += delta[d][0]; nextX += delta[d][1];
-							if (isOut(nextY, nextX) || visited[nextY][nextX]) break;
-							visited[nextY][nextX] = true;
-							if (nextY == thiefY && nextX == thiefX) return jumpCnt;
-							if (classroom[nextY][nextX] == '1') {
-								q.offer(new int[] {nextY, nextX});
-								break;
-							}
-							tempQ.offer(new int[] {nextY, nextX});
-						}
-					}
+				chainQ = new ArrayDeque<>();
+				if (isKilled(cur[0], cur[1], thiefY, thiefX)) return jumpCnt;
+
+				while (!chainQ.isEmpty()) {
+					int [] chainBomb = chainQ.poll();
+					if (isKilled(chainBomb[0], chainBomb[1], thiefY, thiefX)) return jumpCnt;
 				}
 			}
 		}
 		return jumpCnt;
+	}
+
+	static boolean isKilled(int y, int x, int thiefY, int thiefX) {
+		for (int d = 0; d < 4; d++) {
+			int nextY = y, nextX = x;
+			while (true) {
+				nextY += delta[d][0]; nextX += delta[d][1];
+				if (isOut(nextY, nextX) || visited[nextY][nextX]) break;
+				visited[nextY][nextX] = true;
+				if (nextY == thiefY && nextX == thiefX) return true;
+				if (classroom[nextY][nextX] == '1') {
+					q.offer(new int[] {nextY, nextX});
+					break;
+				}
+				chainQ.offer(new int[] {nextY, nextX});
+			}
+		}
+		return false;
 	}
 
 	static boolean isOut(int y, int x){
