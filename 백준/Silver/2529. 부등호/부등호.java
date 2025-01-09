@@ -4,16 +4,16 @@ import java.io.*;
 public class Main {
 	static int K;
 	static boolean[] visited;
-	static String[] arr;
+	static char[] arr;
 	static List<String> list = new ArrayList<>();
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		K = Integer.parseInt(br.readLine());
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		arr = new String[K];
+		arr = new char[K];
 		for (int i = 0; i < K; i++) {
-			arr[i] = st.nextToken();
+			arr[i] = st.nextToken().charAt(0);
 		}
 		visited = new boolean[10];
 		dfs("",0, -1);
@@ -38,10 +38,10 @@ public class Main {
 		}
 	}
 
-	static boolean ckeck(int a, int b, String c) {
-		if (c.equals(">") && a > b) {
+	static boolean ckeck(int a, int b, char c) {
+		if (c == '>' && a > b) {
 			return true;
-		} else if (c.equals("<") && a < b){
+		} else if (c == '<' && a < b){
 			return true;
 		}
 		return false;
