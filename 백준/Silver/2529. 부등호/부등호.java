@@ -10,15 +10,19 @@ public class Main {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		K = Integer.parseInt(br.readLine());
-		arr = br.readLine().split(" ");
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		arr = new String[K];
+		for (int i = 0; i < K; i++) {
+			arr[i] = st.nextToken();
+		}
 		visited = new boolean[10];
-		dfs("",0);
+		dfs("",0, -1);
 		bw.append(list.get(list.size() - 1)).append("\n");
 		bw.append(list.get(0)).append("\n");
 		bw.flush();
 	}
 
-	static void dfs(String num, int idx) {
+	static void dfs(String num, int idx, int pre) {
 		if(idx == K + 1) {
 			list.add(num);
 			return;
@@ -26,9 +30,9 @@ public class Main {
 
 		for(int j = 0 ; j < 10; j++) {
 			if(visited[j])  continue;
-			if(idx == 0 || ckeck(Character.getNumericValue(num.charAt(idx - 1)), j , arr[idx-1])) {
+			if(idx == 0 || ckeck(pre, j , arr[idx-1])) {
 				visited[j] = true;
-				dfs(num+j, idx+1);
+				dfs(num+j, idx+1, j);
 				visited[j] = false;
 			}
 		}
