@@ -2,80 +2,106 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int N, M, H;
-	static boolean[][] ladder;
-	static int cnt;
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		H = Integer.parseInt(st.nextToken());
-		ladder = new boolean[H][N-1];
+	public static void main(String[] args) throws Exception {
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		int N = read(), M = read(), H = read();
+		boolean [][] ladder = new boolean[H+1][N+1];
 		for(int m = 0; m < M; m++) {
-			st = new StringTokenizer(br.readLine(), " ");
-			int a = Integer.parseInt(st.nextToken()) - 1;
-			int b = Integer.parseInt(st.nextToken()) - 1;
+			int a = read();
+			int b = read();
 			ladder[a][b] = true;
 		}
-		cnt = Integer.MAX_VALUE;
-		addLadder(0, 0, 0, new int[4][2]);
-		if(cnt == Integer.MAX_VALUE) {
-			System.out.println("-1");
-		}else {
-			System.out.println(cnt);
-		}
-		
+		bw.write(Integer.toString(addLadder(N, H, M, ladder)));
+		bw.flush();
 	}
-	
-	static void addLadder(int addCnt, int startH, int startN, int[][]select) {
-		if(cnt <= addCnt) {
-			return;
+
+	private static int addLadder(int n, int h, int m, boolean[][] ladder) {
+		if (countOddLines(ladder, n, h) > 3) {
+			return -1;
 		}
-		if(addCnt > 3) {
-			return;
-		}
-		
-		if(checkLadder()) {
-			cnt = Math.min(cnt, addCnt);
-			return;
-		}
-		int n = startN;
-		for(int h = startH; h < H; h++) {
-			for(; n < N-1; n++) {
-				if(ladder[h][n]) continue;
-				if(isIn(h, n-1) && ladder[h][n-1]) continue;
-				if(isIn(h, n+1) && ladder[h][n+1]) continue;
-				ladder[h][n] = true;
-				select[addCnt][0] = h; select[addCnt][1] = n;
-				addLadder(addCnt+1, h, n+1, select);
-				ladder[h][n] = false;
+		for (int limit = m % 2; limit < 4; limit += 2) {
+			if (tryAddLadders(n, h, ladder, limit)) {
+				return limit;
 			}
-			n = 0;
 		}
+		return -1;
 	}
-	
-	static boolean checkLadder() {
-		for (int n = 0; n < N; n++) {
-			int h = 0;
-			int currN = n;
-			while(h < H) {
-				if(isIn(h, currN) && ladder[h][currN]) {
-					currN++;
+
+	private static int countOddLines(boolean[][] ladder, int n, int h) {
+		int oddCount = 0;
+		for (int x = 1; x < n; x++) {
+			boolean isOdd = false;
+			for (int y = 1; y <= h; y++) {
+				if (ladder[y][x]) {
+					isOdd = !isOdd;
 				}
-				else if(isIn(h, currN-1) && ladder[h][currN-1]) {
-					currN--;
-				}
-				h++;
 			}
-			if(currN != n) return false;
+			if (isOdd) {
+				oddCount++;
+			}
+		}
+		return oddCount;
+	}
+
+	private static boolean tryAddLadders(int n, int h, boolean[][] ladder, int limit) {
+		return dfs(n, h, 1, 1, 0, limit, ladder);
+	}
+
+	private static boolean dfs(int n, int h, int y, int x, int count, int limit, boolean[][] ladder) {
+		if (count == limit) {
+			return validateLadders(n, h, ladder);
+		}
+
+		for (int nx = x; nx < n; nx++) {
+			if (addLadderAndCheck(n, h, y, nx, count, limit, ladder)) {
+				return true;
+			}
+		}
+
+		for (int ny = y + 1; ny <= h; ny++) {
+			for (int nx = 1; nx < n; nx++) {
+				if (addLadderAndCheck(n, h, ny, nx, count, limit, ladder)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean addLadderAndCheck(int n, int h, int y, int x, int count, int limit, boolean[][] ladder) {
+		if (ladder[y][x] || ladder[y][x - 1] || ladder[y][x + 1]) {
+			return false;
+		}
+
+		ladder[y][x] = true;
+		boolean result = dfs(n, h, y, x, count + 1, limit, ladder);
+		ladder[y][x] = false;
+
+		return result;
+	}
+
+	private static boolean validateLadders(int n, int h, boolean[][] ladder) {
+		for (int x = 1; x <= n; x++) {
+			int current = x;
+			for (int y = 1; y <= h; y++) {
+				if (ladder[y][current]) {
+					current++;
+				} else if (current > 1 && ladder[y][current - 1]) {
+					current--;
+				}
+			}
+			if (current != x) {
+				return false;
+			}
 		}
 		return true;
 	}
-	
-	static boolean isIn(int r, int c) {
-		return (0<=r&&r<H&&0<=c&&c<N-1);
+
+	static int read() throws Exception{
+		int n = System.in.read() & 15, cur;
+		while ((cur = System.in.read()) > 32) {
+			n = (n << 3) + (n << 1) + (cur & 15);
+		}
+		return n;
 	}
 }
