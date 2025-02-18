@@ -24,13 +24,7 @@ public class Main {
 				roomAreas.add(countRoomBFS(i, j, roomAreas.size()));
 			}
 		}
-		int visitedRoomNum = 0;
-		for (int i = 0; i < M; i++) {
-			for (int j = 0; j < N; j++) {
-				if (roomNum[i][j] <= visitedRoomNum) continue;
-				countRemovedWallRoomDFS(i, j, ++visitedRoomNum, false, new boolean [M][N]);
-			}
-		}
+		countRemovedWallRoom();
 
 		bw.append(Integer.toString(roomAreas.size() - 1)).append('\n')
 			.append(Integer.toString(Collections.max(roomAreas))).append('\n')
@@ -59,27 +53,20 @@ public class Main {
 		return area;
 	}
 
-	static void countRemovedWallRoomDFS(int r, int c, int startRoomNum, boolean isRemovedWall, boolean[][] visited){
-		if (isRemovedWall && roomNum[r][c] == startRoomNum) {
-			return;
+	static void countRemovedWallRoom(){
+		for(int i = 0; i < M; i++){
+			for(int j = 0; j < N - 1; j++){
+				if (roomNum[i][j] == roomNum[i][j+1]) continue;
+				int curArea = roomAreas.get(roomNum[i][j]) + roomAreas.get(roomNum[i][j+1]);
+				maxRemovedWallRoomArea = Math.max(maxRemovedWallRoomArea, curArea);
+			}
 		}
-		if (roomNum[r][c] < startRoomNum) return;
-		if (roomNum[r][c] > startRoomNum) {
-			int curArea = roomAreas.get(startRoomNum) + roomAreas.get(roomNum[r][c]);
-			maxRemovedWallRoomArea = Math.max(maxRemovedWallRoomArea, curArea);
-			return;
-		}
-		visited[r][c] = true;
-		for (int d = 0; d < 4; d++) {
-			if ((walls[r][c] & (1 << d)) != 0 && isRemovedWall) continue;
-			int nr = r + delta[d][0];
-			int nc = c + delta[d][1];
-			if (isOut(nr, nc)) continue;
-			if (visited[nr][nc]) continue;
-			if ((walls[r][c] & (1 << d)) == 0) {
-				countRemovedWallRoomDFS(nr, nc, startRoomNum, isRemovedWall, visited);
-			} else {
-				countRemovedWallRoomDFS(nr, nc, startRoomNum, true, visited);
+
+		for(int j = 0; j < N; j++){
+			for(int i = 0; i < M-1; i++){
+				if (roomNum[i][j] == roomNum[i+1][j]) continue;
+				int curArea = roomAreas.get(roomNum[i][j]) + roomAreas.get(roomNum[i+1][j]);
+				maxRemovedWallRoomArea = Math.max(maxRemovedWallRoomArea, curArea);
 			}
 		}
 	}
