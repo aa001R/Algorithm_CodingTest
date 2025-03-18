@@ -9,13 +9,13 @@ class Solution {
         for(int i = 0; i < foodCnt; i++){
             heap.add(scoville[i]);
         }
-        while(heap.peek() < K){
-            if (heap.size() < 2) return -1;
+        while(heap.peek() < K && heap.size() > 1){
             int a = heap.poll();
             int b = heap.poll() * 2;
             heap.add(a+b);
             answer++;
         }
+        if (heap.peek() < K) answer = -1;
         return answer;
     }
 }
