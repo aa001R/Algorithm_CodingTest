@@ -1,16 +1,12 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Solution {
     public int solution(int[] nums) {
-        int ponkemonCnt = nums.length;
-        HashSet<Integer> set = new HashSet<>();
-        for (int i = 0; i < ponkemonCnt; i++){
-            set.add(nums[i]);
-        }
-        if (ponkemonCnt / 2 <= set.size()) {
-            return ponkemonCnt / 2;
-        } else {
-            return set.size();
-        }
+        return Arrays.stream(nums) 
+                .boxed()
+                .collect(Collectors.collectingAndThen(Collectors.toSet(),
+                        ponkemons -> Integer.min(ponkemons.size(), nums.length / 2)));
+
     }
 }
