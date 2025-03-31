@@ -1,0 +1,17 @@
+-- 코드를 입력하세요
+SELECT CATEGORY, PRICE AS MAX_PRICE, PRODUCT_NAME
+FROM FOOD_PRODUCT FP
+WHERE CATEGORY IN ('과자', '국', '김치', '식용유')
+    AND PRICE = (
+        SELECT MAX(PRICE)
+        FROM FOOD_PRODUCT
+        WHERE CATEGORY = FP.CATEGORY
+    )
+ORDER BY MAX_PRICE DESC
+;
+
+# select *
+# FROM FOOD_PRODUCT
+# WHERE CATEGORY IN ('과자', '국', '김치', '식용유')
+
+-- 마조유 8950, 배추김치 1900, 김치찌개 2900 , 허니버터 1950
