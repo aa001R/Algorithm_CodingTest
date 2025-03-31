@@ -2,17 +2,17 @@ import java.util.*;
 
 public class Solution {
     public int[] solution(int []arr) {
-        ArrayDeque<Integer> stack = new ArrayDeque<>();
-        stack.push(arr[0]);
-        for (int i = 1; i < arr.length; i++) {
-            if (stack.peek() != arr[i]) {
-                stack.push(arr[i]);
+        ArrayList<Integer> stack = new ArrayList<Integer>();
+        int preNum = 10;
+        for (int num : arr) {
+            if (preNum != num) {
+                stack.add(num);
             }
+            preNum = num;
         }
-        
-        int[] answer = new int [stack.size()];
-        for (int i = stack.size() - 1; i >= 0; --i) {
-            answer[i] = stack.pop();
+        int [] answer = new int [stack.size()];
+        for (int i = 0; i < stack.size(); i++) {
+            answer[i] = stack.get(i);
         }
         return answer;
     }
