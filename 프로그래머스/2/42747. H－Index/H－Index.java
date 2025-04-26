@@ -1,15 +1,18 @@
-import java.util.*;
+import java.util.Arrays;
 
-class Solution {
+public class Solution {
     public int solution(int[] citations) {
         Arrays.sort(citations);
-
-        int max = 0;
-        for(int i = citations.length-1; i > -1; i--){
-            int min = (int)Math.min(citations[i], citations.length - i);
-            if(max < min) max = min;
+        
+        int n = citations.length;
+        
+        for (int i = 0; i < n; i++) {
+            int h = n - i; // h = citations[i]번 이상 인용된 논문 수 (i번째 이후)
+            if (citations[i] >= h) {
+                return h;
+            }
         }
-
-        return max;
+        
+        return 0;
     }
 }
