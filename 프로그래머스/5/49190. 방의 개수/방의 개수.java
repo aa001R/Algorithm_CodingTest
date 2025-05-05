@@ -25,7 +25,7 @@ class Solution {
                 String edge1 = from + ":" + to;
                 String edge2 = to + ":" + from; // 양방향 처리
 
-                if (nodes.contains(to) && !edges.contains(edge1) && !edges.contains(edge2)) {
+                if (nodes.contains(to) && !edges.contains(edge1)) {
                     roomCount++;
                 }
 
