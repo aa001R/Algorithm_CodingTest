@@ -1,47 +1,48 @@
 import java.util.*;
+
 class Solution {
-    static int [] parents;
+    int N, min;                     // 전체 송전탑 수와 최소 차이값
+    List<Integer>[] graph;         // 인접 리스트로 구성된 트리
+    boolean[] visited;             // 방문 여부 체크 (역방향 방지)
+
     public int solution(int n, int[][] wires) {
-        int answer = Integer.MAX_VALUE;
-        parents = new int[n+1];
-        for (int i = 0; i < wires.length; i++) {
-            cuttingWires(n, i, wires);
-            answer = Math.min(answer, countDiff(parents));
+        this.N = n;
+        this.min = n;
+
+        // 그래프 초기화
+        graph = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            graph[i] = new ArrayList<>();
         }
-        return answer;
-    }
-    
-    private void cuttingWires(int n, int cuttingIdx, int[][] wirtes){
-        init();
-        for (int i = 0; i < wirtes.length; i++) {
-            if (i == cuttingIdx) continue;
-            union(wirtes[i][0], wirtes[i][1]);
+
+        // 양방향 간선 정보 등록
+        for (int[] wire : wires) {
+            int a = wire[0], b = wire[1];
+            graph[a].add(b);
+            graph[b].add(a);
         }
+
+        visited = new boolean[n + 1];
+        dfs(1); // 루트 노드에서 DFS 시작
+
+        return min;
     }
-    
-    private int countDiff(int [] parents){
-        int rootOne = find(1), oneUnionCnt = 1;
-        for (int i = 2; i < parents.length; i++) {
-            if(rootOne != find(i)) continue;
-            oneUnionCnt++;
+
+    // DFS: 서브트리 크기를 반환하면서 두 트리로 나눈 경우 차이 갱신
+    private int dfs(int node) {
+        visited[node] = true;
+        int subtreeSize = 1; // 자기 자신 포함
+
+        for (int neighbor : graph[node]) {
+            if (!visited[neighbor]) {
+                subtreeSize += dfs(neighbor); // 자식 서브트리 크기 누적
+            }
         }
-        int otherUnionCnt = parents.length - 1 - oneUnionCnt;
-        return Math.abs(otherUnionCnt - oneUnionCnt);
-    }
-    
-    private void init(){
-        for (int i = 1; i < parents.length; i++) {
-            parents[i] = i;
-        }
-    }
-    
-    private int find(int a){
-        if (parents[a] == a) return a;
-        return parents[a] = find(parents[a]);
-    }
-    
-    private void union(int a, int b){
-        int rootA = find(a), rootB = find(b);
-        parents[rootB] = rootA;
+
+        // 현재 노드에서 절단한다고 가정했을 때 두 트리 차이 계산
+        int diff = Math.abs(N - 2 * subtreeSize);
+        min = Math.min(min, diff);
+
+        return subtreeSize; // 현재 노드를 루트로 한 서브트리 크기 반환
     }
 }
