@@ -20,15 +20,13 @@ class Solution {
     }
     
     private int countDiff(int [] parents){
-        Map<Integer, Integer> countMap = new HashMap<>();
-        for (int i = 1; i < parents.length; i++) {
-            int root = find(parents[i]);
-            countMap.put(root, countMap.getOrDefault(root, 0) + 1);
+        int rootOne = find(1), oneUnionCnt = 1;
+        for (int i = 2; i < parents.length; i++) {
+            if(rootOne != find(i)) continue;
+            oneUnionCnt++;
         }
-        Iterator<Integer> it = countMap.values().iterator();
-        int count1 = it.next(),count2 = it.next();
-        
-        return Math.abs(count1 - count2);
+        int otherUnionCnt = parents.length - 1 - oneUnionCnt;
+        return Math.abs(otherUnionCnt - oneUnionCnt);
     }
     
     private void init(){
