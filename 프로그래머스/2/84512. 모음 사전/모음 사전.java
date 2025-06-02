@@ -1,6 +1,6 @@
 class Solution {
     static int order;
-    static String [] ALPHA = {"A","E","I","O","U"};
+    static final String [] ALPHA = {"A","E","I","O","U"};
     public int solution(String word) {
         findOrderDfs("", word);
         return order;
