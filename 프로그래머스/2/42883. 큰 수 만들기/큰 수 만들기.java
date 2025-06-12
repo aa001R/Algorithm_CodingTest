@@ -2,21 +2,17 @@ import java.util.*;
 class Solution {
     public String solution(String number, int k) {
         StringBuilder answer = new StringBuilder();
-        ArrayDeque<Character> stack = new ArrayDeque<>();
+        ArrayDeque<Character> deque = new ArrayDeque<>();
         for (int i = 0; i < number.length(); i++) {
-            while( !stack.isEmpty() && stack.peek() < number.charAt(i) && k > 0) {
-                    stack.pop();
+            while( !deque.isEmpty() && deque.peek() < number.charAt(i) && k > 0) {
+                    deque.pop();
                     k--;
             }
-            stack.push(number.charAt(i));
+            deque.push(number.charAt(i));
         }
-        while( !stack.isEmpty() && k > 0) {
-            stack.pop();
-            k--;
+        while (deque.size() - k > 0) {
+            answer.append(deque.pollLast());
         }
-        while( !stack.isEmpty()) {
-            answer.append(stack.pop());
-        }
-        return answer.reverse().toString();
+        return answer.toString();
     }
 }
