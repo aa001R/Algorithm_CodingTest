@@ -1,18 +1,21 @@
 import java.util.*;
 class Solution {
     public String solution(String number, int k) {
-        StringBuilder answer = new StringBuilder();
-        ArrayDeque<Character> deque = new ArrayDeque<>();
-        for (int i = 0; i < number.length(); i++) {
-            while( !deque.isEmpty() && deque.peek() < number.charAt(i) && k > 0) {
-                    deque.pop();
-                    k--;
-            }
-            deque.push(number.charAt(i));
+    int len = number.length();
+    char[] result = new char[len - k]; // 결과 길이
+    int idx = 0;
+
+    for (int i = 0; i < len; i++) {
+        char ch = number.charAt(i);
+
+        // 뒤에 있는 값보다 큰 수가 들어오면 앞자리 제거
+        while (idx > 0 && result[idx - 1] < ch && k > 0) {
+            idx--;
+            k--;
         }
-        while (deque.size() - k > 0) {
-            answer.append(deque.pollLast());
-        }
-        return answer.toString();
+        if (idx < result.length) result[idx++] = ch;
+    }
+
+    return new String(result);
     }
 }
