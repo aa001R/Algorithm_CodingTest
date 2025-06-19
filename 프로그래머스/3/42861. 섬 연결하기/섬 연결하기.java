@@ -16,18 +16,19 @@ class Solution {
     
     static Edge[] edgeList;
 	static int[] parents;
+
     public int solution(int n, int[][] costs) {
-        int answer = 0;
-        parents = new int[n];
         edgeList = new Edge[costs.length];
+        parents = new int[n];
+
         for (int i = 0; i < costs.length; i++) {
             edgeList[i] = new Edge(costs[i][0], costs[i][1], costs[i][2]);
         }
+        
         make(n);
 		Arrays.sort(edgeList);
         
-        int result = 0;
-		int count = 0;// 연결 간선수
+        int result = 0, count = 0;// 연결 간선수
 		for (Edge edge : edgeList) {
 			if (!union(edge.start, edge.end)) continue;
 			result += edge.weight;
