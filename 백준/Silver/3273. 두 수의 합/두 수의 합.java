@@ -1,33 +1,39 @@
 import java.io.*;
-import java.util.*;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
 		int N = read();
-		ArrayList<Integer> nums = new ArrayList<>(N);
+		boolean[] exists = new boolean[1_000_001];
+		int[] nums = new int[N];
+
 		for (int i = 0; i < N; i++) {
-			nums.add(read());
+			nums[i] = read();
+			exists[nums[i]] = true; // 해당 수가 존재한다고 표시
 		}
+
 		int x = read();
-		Collections.sort(nums);
-		int left = 0; int right = nums.size() - 1;
-		int cnt = 0;
-		while(left < right) {
-			int sum = nums.get(left) + nums.get(right);
-			if (sum == x) {cnt++;}
-			if (sum <= x) {left++;}
-			else { right--; }
+		int count = 0;
+
+		for (int i = 0; i < N; i++) {
+			int target = x - nums[i];
+			if (target <= 0 || target > 1_000_000) continue;
+
+			if (exists[target]) {
+				count++;
+			}
 		}
-		System.out.println(cnt);
+
+		// (a, b)와 (b, a)를 모두 세었으므로 2로 나눔
+		System.out.println(count / 2);
 	}
 
 	public static int read() throws IOException {
 		int cur, n = System.in.read() & 15;
 		boolean isNegative = (n == 13);
 		if (isNegative) n = System.in.read() & 15;
-		while((cur = System.in.read()) > 32) {
+		while ((cur = System.in.read()) > 32) {
 			n = (n << 3) + (n << 1) + (cur & 15);
 		}
-		return isNegative? -n : n;
+		return isNegative ? -n : n;
 	}
 }
