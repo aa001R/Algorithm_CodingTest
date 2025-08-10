@@ -8,9 +8,9 @@ public class Main {
         for (int i = 0; i < N; i++) a[i] = read();
 
         long count = 0;
-        long prefixSum = 0;
-        Map<Long, Integer> map = new HashMap<>();
-        map.put(0L, 1); // 누적합이 정확히 K일 경우를 위한 초기값
+        int prefixSum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1); // 누적합이 정확히 K일 경우를 위한 초기값
 
         for (int i = 0; i < N; i++) {
             prefixSum += a[i];
