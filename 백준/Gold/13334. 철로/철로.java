@@ -4,24 +4,25 @@ import java.util.*;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		int n = read();
-		PriorityQueue<int []> pq = new PriorityQueue<>(Comparator.comparing(a -> a[1]));
+		List<int []> list = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
 			int home = read(), office = read();
-			pq.offer(new int[]{i, home});
-			pq.offer(new int[]{i, office});
+			list.add(new int[]{i, home});
+			list.add(new int[]{i, office});
 		}
 		int d = read();
+
+		list.sort(Comparator.comparing(a -> a[1]));
 		ArrayDeque<int []> q = new ArrayDeque<>();
 		int [] person = new int [n];
 		int max = 0, sum = 0;
-		while(!pq.isEmpty()){
-			if(!q.isEmpty() && pq.peek()[1] - q.peek()[1] > d) {
+		for(int [] cur : list){
+			if(!q.isEmpty() && cur[1] - q.peek()[1] > d) {
 				max = Math.max(max, sum);
-				while(!q.isEmpty() && pq.peek()[1] - q.peek()[1] > d) {
+				while(!q.isEmpty() && cur[1] - q.peek()[1] > d) {
 					if (person[q.poll()[0]]-- == 2) sum--;
 				}
 			}
-			int[] cur = pq.poll();
 			q.offer(cur);
 			if(++person[cur[0]] == 2) sum++;
 		}
