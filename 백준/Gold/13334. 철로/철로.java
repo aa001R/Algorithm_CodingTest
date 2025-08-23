@@ -13,18 +13,16 @@ public class Main {
 		int d = read();
 
 		list.sort(Comparator.comparing(a -> a[1]));
-		ArrayDeque<int []> q = new ArrayDeque<>();
 		int [] person = new int [n];
-		int max = 0, sum = 0;
-		for(int [] cur : list){
-			if(!q.isEmpty() && cur[1] - q.peek()[1] > d) {
+		int max = 0, sum = 0, start = 0;
+		for(int i = 0; i < list.size(); i++){
+			if(start < i && list.get(i)[1] - list.get(start)[1] > d) {
 				max = Math.max(max, sum);
-				while(!q.isEmpty() && cur[1] - q.peek()[1] > d) {
-					if (person[q.poll()[0]]-- == 2) sum--;
+				while(start < i && list.get(i)[1] - list.get(start)[1] > d) {
+					if (person[list.get(start++)[0]]-- == 2) sum--;
 				}
 			}
-			q.offer(cur);
-			if(++person[cur[0]] == 2) sum++;
+			if(++person[list.get(i)[0]] == 2) sum++;
 		}
 		max = Math.max(max, sum);
 		System.out.println(max);
