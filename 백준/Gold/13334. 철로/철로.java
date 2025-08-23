@@ -2,29 +2,38 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+	static class Event {
+		final int railEnd, change;
+		Event(int railEnd, int change) {
+			this.railEnd = railEnd;
+			this.change = change;
+		}
+	}
 	public static void main(String[] args) throws IOException {
-		int n = read();
-		List<int []> list = new ArrayList<>();
-		for (int i = 0; i < n; i++) {
+		int N = read();
+		int[][] data = new int[N][2];
+		for (int i = 0; i < N; i++) {
 			int home = read(), office = read();
-			list.add(new int[]{i, home});
-			list.add(new int[]{i, office});
+			data[i][0] = Math.min(home, office);
+			data[i][1] = Math.max(home, office);
 		}
 		int d = read();
 
-		list.sort(Comparator.comparing(a -> a[1]));
-		int [] person = new int [n];
-		int max = 0, sum = 0, start = 0;
-		for(int i = 0; i < list.size(); i++){
-			if(start < i && list.get(i)[1] - list.get(start)[1] > d) {
-				max = Math.max(max, sum);
-				while(start < i && list.get(i)[1] - list.get(start)[1] > d) {
-					if (person[list.get(start++)[0]]-- == 2) sum--;
-				}
-			}
-			if(++person[list.get(i)[0]] == 2) sum++;
+		PriorityQueue<Event> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e.railEnd));
+		for (int i = 0; i < N; i++) {
+			if (data[i][1] - data[i][0] > d) continue;
+			pq.offer(new Event(data[i][1], 1));
+			pq.offer(new Event(data[i][0] + d + 1, -1));
 		}
-		max = Math.max(max, sum);
+		int max = 0, cnt = 0;
+		while (!pq.isEmpty()) {
+			Event e = pq.poll();
+			cnt += e.change;
+			while (!pq.isEmpty() && pq.peek().railEnd == e.railEnd) {
+				cnt += pq.poll().change;
+			}
+			max = Math.max(max, cnt);
+		}
 		System.out.println(max);
 	}
 
