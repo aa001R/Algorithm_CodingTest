@@ -14,8 +14,12 @@ public class Main {
 		int[][] data = new int[N][2];
 		for (int i = 0; i < N; i++) {
 			int home = read(), office = read();
-			data[i][0] = Math.min(home, office);
-			data[i][1] = Math.max(home, office);
+			if (home > office) {
+				int temp = home;
+				home = office;
+				office = temp;
+			}
+			data[i] = new int[] { home, office };
 		}
 		int d = read();
 
@@ -29,9 +33,7 @@ public class Main {
 		while (!pq.isEmpty()) {
 			Event e = pq.poll();
 			cnt += e.change;
-			while (!pq.isEmpty() && pq.peek().railEnd == e.railEnd) {
-				cnt += pq.poll().change;
-			}
+			while (!pq.isEmpty() && pq.peek().railEnd == e.railEnd) cnt += pq.poll().change;
 			max = Math.max(max, cnt);
 		}
 		System.out.println(max);
