@@ -1,8 +1,11 @@
+import java.util.*;
 class Solution {
     public int solution(int n, int k) {
         // 1. k진법으로 변환
         String baseK = Integer.toString(n, k);
-        
+        // System.out.println(Arrays.toString("00100200".split("0+")));
+        // System.out.println(Arrays.toString("00100200".split("0+", -1)));
+        // System.out.println(Arrays.toString("00100200".split("0")));
         // 2. 0을 기준으로 분리
         String[] parts = baseK.split("0+");
         
