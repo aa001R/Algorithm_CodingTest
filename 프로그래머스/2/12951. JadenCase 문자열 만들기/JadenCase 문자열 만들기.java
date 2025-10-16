@@ -5,16 +5,9 @@ class Solution {
     public String solution(String s) {
         StringBuilder sb = new StringBuilder();
         boolean isStart = true;
-        for (char c : s.toCharArray()){
-            if (c == ' '){
-                isStart = true;
-            } else if (isStart) {
-                isStart = false;
-                c = Character.toUpperCase(c);
-            } else {
-                c = Character.toLowerCase(c);
-            }
-            sb.append(c);
+        for (char c : s.toLowerCase().toCharArray()){
+            sb.append(isStart ? Character.toUpperCase(c) : c);
+            isStart = c == ' ';
         }
         return sb.toString();
     }
