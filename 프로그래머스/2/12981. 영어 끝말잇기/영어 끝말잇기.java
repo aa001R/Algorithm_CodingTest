@@ -7,14 +7,16 @@ class Solution {
     public int[] solution(int n, String[] words) {
         int failN = 0, failOrder = 0;
         Set<String> wordSet = new HashSet<>();
+        char preChar = words[0].charAt(0);
         for(int i = 0; i < words.length; i++){
             if(words[i].length() <= 1
-                || (i > 0 && words[i-1].charAt(words[i-1].length()-1) != words[i].charAt(0))
+                || preChar != words[i].charAt(0)
                 || wordSet.contains(words[i])) {
                 failN = i % n + 1;
                 failOrder = i / n + 1;
                 break;
             }
+            preChar = words[i].charAt(words[i].length()-1);
             wordSet.add(words[i]);
         }
         return new int[] {failN, failOrder};
