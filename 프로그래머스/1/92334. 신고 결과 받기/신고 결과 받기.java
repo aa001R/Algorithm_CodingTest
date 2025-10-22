@@ -8,33 +8,37 @@ class Solution {
     모든 신고 내용을 마지막 한번에 처리
     */
     public int[] solution(String[] id_list, String[] report, int k) {
-        int n = id_list.length;
-        int[] answer = new int[n];
-        // id별 신고당한 횟수
-        int[] reportCnt = new int[n];
-        // 유저idx : id
-        Map<String, Integer> userIdx = new HashMap<>();
-        // 신고당한사람 : 신고한사람[]
-        Map<String, Set<String>> reportees = new HashMap<>();
-        // user - idx 초기화
-        for(int i = 0; i < n; i++){
-            userIdx.put(id_list[i], i);
-            reportees.put(id_list[i], new HashSet<>());
+        int userCount = id_list.length;
+        int[] answer = new int[userCount];
+        
+        // ID → 배열 index 매핑
+        Map<String, Integer> idToIndex = new HashMap<>();
+        for (int i = 0; i < userCount; i++) {
+            idToIndex.put(id_list[i], i);
         }
-        // 신고 당한 사람 key로 신고 횟수 세기
-        for(String re: report){
-            String[] r = re.split(" ");
-            if(reportees.get(r[1]).contains(r[0])) continue;
-            reportCnt[userIdx.get(r[1])]++;
-            reportees.get(r[1]).add(r[0]);
+        
+        // 신고당한 사람 → 신고한 사람 집합
+        Map<String, Set<String>> reportedBy = new HashMap<>();
+        for (String id : id_list) {
+            reportedBy.put(id, new HashSet<>());
         }
-        // 신고 횟수 조회하며 정지된 사람 판별 & 신고한 사람 알림 처리
-        for(int i = 0; i < n; i++){
-            if(reportCnt[i] < k) continue;
-            for(String reporter : reportees.get(id_list[i])){
-                answer[userIdx.get(reporter)]++;
+        
+        // 중복 신고 제거 후 신고 정보 집계
+        for (String r : new HashSet<>(Arrays.asList(report))) {
+            String[] parts = r.split(" ");
+            String reporter = parts[0];
+            String reported = parts[1];
+            reportedBy.get(reported).add(reporter);
+        }
+
+        // 신고 횟수 기준 k 이상인 사람 판별 후 신고자에게 메일 수 증가
+        for (String reported : id_list) {
+            Set<String> reporters = reportedBy.get(reported);
+            if (reporters.size() < k) continue;
+            for (String reporter : reporters) {
+                answer[idToIndex.get(reporter)]++;
             }
-        }        
+        }  
         return answer;
     }
 }
