@@ -2,15 +2,15 @@ import java.util.*;
 
 class Solution {
     public String solution(int n, int t, int m, int p) {
-        StringBuilder sb = new StringBuilder();
-        int order = 0, number = 0;
-        while(sb.length() < t){
-           for(String num : Integer.toString(number, n).split("")){
-               if(order++ % m + 1 == p) sb.append(num);
-               if(sb.length() >= t) break;
-           }
-            number++;
+        StringBuilder numStr = new StringBuilder();
+        StringBuilder targetStr = new StringBuilder();
+        int number = 0;
+        while(numStr.length() < t * m){
+           numStr.append(Integer.toString(number++, n));
         }
-        return sb.toString().toUpperCase();
+        for(int i = 0; i < t; i++){
+            targetStr.append(numStr.charAt(p-1 + i*m)); // 0-base
+        }
+        return targetStr.toString().toUpperCase();
     }
 }
