@@ -3,17 +3,20 @@ import java.util.*;
 class Solution {
     public int[] solution(String msg) {
         List<Integer> answer = new ArrayList<>();
-        Map<String, Integer> dict = new HashMap<>();
-        for(int i = 0; i < 26; i++){
-            dict.put(String.valueOf((char)('A'+i)), i+1);
+        ArrayList<String> dic = new ArrayList<String>();
+        for(int i = 0 ; i < 26; i++) {
+            dic.add(String.valueOf((char)('A'+i)));
         }
-        int cur = 0, next = 0;
-        while(cur < msg.length()){
-            while(next < msg.length() && dict.containsKey(msg.substring(cur, next+1))){ next++; }
-            String w = msg.substring(cur, next);
-            answer.add(dict.get(w));
-            if(next < msg.length()) dict.put(w+msg.charAt(next), dict.size()+1);
-            cur = next;
+
+        for(int i = 0 ; i < msg.length() ; i++) {
+            for(int j = dic.size()-1 ; j >= 0 ; j--) {
+                if(msg.substring(i).startsWith(dic.get(j))) { // w = dic.get(j)
+                    i += dic.get(j).length() - 1;   // for문에서 i++ 하므로 -1
+                    answer.add(j+1);
+                    if(i+1 < msg.length()) dic.add(dic.get(j)+msg.charAt(i+1));
+                    break;
+                }
+            }
         }
         return answer.stream().mapToInt(Integer::valueOf).toArray();
     }
