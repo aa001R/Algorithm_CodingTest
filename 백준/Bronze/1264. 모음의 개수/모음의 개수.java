@@ -25,12 +25,20 @@ public class Main {
 	}
 
 	static HashMap<Character, Integer> makeMap() {
-		return new HashMap<>(Map.of(
-			'a', 0,
-			'e', 0,
-			'i', 0,
-			'o', 0,
-			'u', 0
-		));
+		return new HashMap<Character, Integer>(){{
+			put('a', 0);
+			put('e', 0);
+			put('i', 0);
+			put('o', 0);
+			put('u', 0);
+		}};
+	}
+
+	public static int read() throws IOException {
+		int cur, n = System.in.read() & 15;
+		boolean isNegative = (n == 13);
+		if(isNegative) n = System.in.read() & 15;
+		while((cur = System.in.read()) > 32) n = (n << 3) + (n << 1) + (cur & 15);
+		return isNegative? -n : n;
 	}
 }
