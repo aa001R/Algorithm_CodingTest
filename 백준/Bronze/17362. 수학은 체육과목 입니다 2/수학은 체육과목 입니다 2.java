@@ -2,22 +2,22 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int [][] finger = {
-		{1, 9},
-		{2, 8},
-		{3, 7},
-		{4, 6},
-		{5, 13},
+	static int[][] finger = {
+		{1, 1},  // 1%8, 9%8
+		{2, 0},  // 2%8, 8%8
+		{3, 7},  // 3%8, 7%8
+		{4, 6},  // 4%8, 6%8
+		{5, 5},  // 5%8, 13%8
 	};
 	public static void main(String[] args) throws IOException {
 		int n = read();
+		int nMod = n % 8;
 		for (int i = 0; i < finger.length; i++){
 			for (int j = 0; j < finger[i].length; j++){
-				if ((n - finger[i][j]) % 8 != 0) continue;
+				if (nMod != finger[i][j]) continue;
 				System.out.println(i+1);
 				return;
 			}
-
 		}
 	}
 
